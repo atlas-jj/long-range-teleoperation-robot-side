@@ -1,0 +1,43 @@
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:~/catkin_ws/src/long_range_teleoperatoin/robot-side/2_ORB_SLAM_Pub/Examples/ROS
+echo $ROS_PACKAGE_PATH$
+
+export ROS_MASTER_URI=http://192.168.1.17:11311
+export ROS_HOSTNAME=192.168.1.17
+
+compile:
+1 ORB-SLAM library:chmod +x build.sh
+2 ./build.sh
+
+compile ROS:
+1 chmod +x build_ros.sh
+2 ./build_ros.sh
+source ~/catkin_ws/src/long_range_teleoperation/robot-side/2_ORB_SLAM_Pub/Examples/ROS/ORB_CARV_Pub/build/devel/setup.bash
+
+cd ~/catkin_ws/src/long_range_teleoperation/robot-side/2_ORB_SLAM_Pub
+
+How can you define a different package name other than  ORB_SLAM?
+simple, just rename the folder, under ORS, change ORB_SLAM2 to ORB_SLAM2_v1 for example.
+also, change build_ros.sh, change the directory name.
+
+or firstly , do unlinking, 
+sudo ln -s /media/chris/vol/fc/CARV+VS/codes/Examples/ROS/ORB_CARV /opt/ros/kinetic/share/ORB_CARV
+then compile
+
+if say no rule to make target...
+delete build folder and build again.
+
+1.roscore
+2.
+rosrun image_transport republish compressed in:=/touch/usb_cam/image_raw raw out:=/chris/image
+rosrun ORB_CARV_Pub Mono Vocabulary/ORBvoc.txt chris_logic_HD720.yaml /camera/image_raw:=/usb_cam/image_raw
+
+5 move to home position 
+rosservice call /zeus/wam/joint_move '[0,-1.9,0,3.0]'
+rosservice call /zeus/wam/go_home
+
+rosbag record /usb_cam/image_raw /usb_cam/camera_info /zeus/wam/jacobian /zeus/wam/joint_states /zeus/wam/pose
+
+rosbag record /chris/twc /zeus/wam/jacobian /zeus/wam/joint_states /zeus/wam/pose
+
+rosrun carv_drive_routine controller
+
